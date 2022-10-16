@@ -40,7 +40,8 @@ enum
     RCOLOR,
     GCOLOR,
     BCOLOR,
-    IDLECOLOR
+    IDLECOLOR,
+    READYCOLOR,
 };
 
 extern uint32_t gCount1;
@@ -57,5 +58,8 @@ extern void ColorCount1();
 extern void ColorCount2();
 extern void ColorDetectCallBack2();
 extern void ColorDetectCallBack1();
+
+extern void ColorFlash();
+extern bool ColorIsReady();
 
 #endif

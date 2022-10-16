@@ -20,6 +20,19 @@ uint32_t colorCounter1[3], colorCounter2[3];
 int colorStatue1 = RCOLOR; // 滤波器模式选择顺序标志
 int colorStatue2 = RCOLOR;
 
+
+//read color once, and turn off leds (save power, cool effect)
+void ColorFlash()
+{
+  colorStatue1 = RCOLOR;
+  colorStatue2 = RCOLOR;
+}
+
+bool ColorIsReady()
+{
+  return (colorStatue1 == READYCOLOR && colorStatue2 == READYCOLOR);
+}
+
 void ColorDetectCallBack1()
 {
     static float vocoe[3] = {0.7, 0.8, 0.8};
@@ -38,31 +51,36 @@ void ColorDetectCallBack1()
     switch (colorStatue1)
     {
     case RCOLOR:
+        digitalWrite(Color1_LED, HIGH); // led on
         gCount1 = 0;
+
         digitalWrite(Color1_S2, LOW);
-        digitalWrite(Color1_S3, LOW); //选择让红色光线通过滤波器的模式
+        digitalWrite(Color1_S3, LOW); //选择让红色光线通过滤波器的模式  rood filter aan
+
         colorStatue1 = GCOLOR;
         break;
     case GCOLOR:
         colorCounter1[0] = gCount1;
         gCount1 = 0;
         digitalWrite(Color1_S2, HIGH);
-        digitalWrite(Color1_S3, HIGH); //选择让绿色光线通过滤波器的模式
+        digitalWrite(Color1_S3, HIGH); //选择让绿色光线通过滤波器的模式 groen filter aan
         colorStatue1 = BCOLOR;
         break;
     case BCOLOR:
         colorCounter1[1] = gCount1;
         gCount1 = 0;
         digitalWrite(Color1_S2, LOW);
-        digitalWrite(Color1_S3, HIGH); //选择让蓝色光线通过滤波器的模式
+        digitalWrite(Color1_S3, HIGH); //选择让蓝色光线通过滤波器的模式 blauw filter aan
         colorStatue1 = IDLECOLOR;
         break;
     case IDLECOLOR:
         colorCounter1[2] = gCount1;
-        gCount1 = 0;
-        digitalWrite(Color1_S2, LOW);
-        digitalWrite(Color1_S3, LOW); //选择让红色光线通过滤波器的模式
-        colorStatue1 = GCOLOR;
+        // gCount1 = 0;
+        // digitalWrite(Color1_S2, LOW);
+        // digitalWrite(Color1_S3, LOW); //选择让红色光线通过滤波器的模式 rood filter aan
+        // colorStatue1 = GCOLOR;
+        colorStatue1 = READYCOLOR;
+        digitalWrite(Color1_LED, LOW); // led off
         memcpy(gColorCounter1, colorCounter1, sizeof(uint32_t) * 3);
         for (int i = 0; i < 3; i++)
         {
@@ -73,6 +91,7 @@ void ColorDetectCallBack1()
             }
         }
         break;
+    default:;
     }
 }
 void ColorDetectCallBack2()
@@ -94,6 +113,7 @@ void ColorDetectCallBack2()
     switch (colorStatue2)
     {
     case RCOLOR:
+        digitalWrite(Color2_LED, HIGH); // led on
         gCount2 = 0;
         digitalWrite(Color2_S2, LOW);
         digitalWrite(Color2_S3, LOW); //选择让红色光线通过滤波器的模式
@@ -115,10 +135,11 @@ void ColorDetectCallBack2()
         break;
     case IDLECOLOR:
         colorCounter2[2] = gCount2;
-        gCount2 = 0;
-        digitalWrite(Color2_S2, LOW);
-        digitalWrite(Color2_S3, LOW); //选择让红色光线通过滤波器的模式
-        colorStatue2 = GCOLOR;
+        // gCount2 = 0;
+        // digitalWrite(Color2_S2, LOW);
+        // digitalWrite(Color2_S3, LOW); //选择让红色光线通过滤波器的模式
+        colorStatue2 = READYCOLOR;
+        digitalWrite(Color2_LED, LOW); // led off
 
         memcpy(gColorCounter2, colorCounter2, sizeof(uint32_t) * 3);
         for (int i = 0; i < 3; i++)
@@ -130,6 +151,7 @@ void ColorDetectCallBack2()
             }
         }
         break;
+    default:;
     }
 }
 
@@ -249,7 +271,7 @@ int ColorInit(int port)
         Serial.print("    B:");
         Serial.println(gColorSF2[2], 5);
         attachInterrupt(ITRNUM2, ColorCount2, RISING);
-        digitalWrite(Color2_LED, HIGH); //点亮LED灯
+          digitalWrite(Color2_LED, HIGH); //点亮LED灯
     }
     return 0;
 }

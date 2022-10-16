@@ -351,7 +351,7 @@ static void TimeTask()
     {
         RUN_BY_LIMIT_BLOCK(20, Motor_ctrl());
         RUN_BY_LIMIT_BLOCK(gBlinkFre, led_ctrl());
-        RUN_BY_LIMIT_BLOCK(2, ColorDetect());
+        RUN_BY_LIMIT_BLOCK(5, ColorDetect());
     }
     else
     {
@@ -724,6 +724,7 @@ bool AIStarter_SmartBotDetColorSenor(int port, int color)
     }
 }
 
+
 int AIStarter_SmartBotSetKeyInit()
 {
     pinMode(PINSW1, INPUT);
@@ -845,4 +846,13 @@ int AIStarter_SmartBotXbeeClear(void)
 {
     xbeeReadBuffer.remove(0, xbeeReadBuffer.length());
     return 0;
+}
+
+void AIStarter_ColorFlash() {
+  ColorFlash();
+}
+
+bool AIStarter_ColorIsReady()
+{
+    return(ColorIsReady());
 }

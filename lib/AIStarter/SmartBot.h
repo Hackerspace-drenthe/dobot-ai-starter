@@ -369,4 +369,10 @@ extern int AIStarter_SmartBotXbeeCompare(const String &str1, const String &str2)
 *********************************************************************************************************/
 extern int AIStarter_SmartBotXbeeClear(void);
 
+extern void
+AIStarter_ColorFlash();
+
+extern bool
+AIStarter_ColorIsReady();
+
 #endif
