@@ -23,7 +23,7 @@ loop()
     delay(250);
 
   sprintf(buffer,
-          "Kleuren     : (%3d, %3d, %3d)  (%3d, %3d, %3d) ",
+          "Kleuren     : L=(%3d,%3d,%3d)  R=(%3d,%3d,%3d) ",
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, RCOLOR),
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, GCOLOR),
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, BCOLOR),
@@ -40,15 +40,17 @@ loop()
           AIStarter_SmartBotGetIRModuleValue(IR3),
           AIStarter_SmartBotGetIRModuleValue(IR4),
           AIStarter_SmartBotGetIRModuleValue(IR5),
-          AIStarter_SmartBotGetIRModuleValue(IR6)  );
+          AIStarter_SmartBotGetIRModuleValue(IR6));
+  Serial.println(buffer);
+
+  sprintf(buffer, "Licht sensor: %d", AIStarter_SmartBotGetLightAnalog());
   Serial.println(buffer);
 
   sprintf(buffer,
-          "Licht sensor: %d",
-          AIStarter_SmartBotGetLightAnalog());
-  Serial.println(buffer);
-
-  sprintf(buffer, "Licht sensor: %d", AIStarter_SmartBotGetBarrier);
+          "Sonar       : L=%d M=%d R=%d",
+          (int)AIStarter_SmartBotGetSonar(SONAR1),
+          (int)AIStarter_SmartBotGetSonar(SONAR2),
+          (int)AIStarter_SmartBotGetSonar(SONAR3));
   Serial.println(buffer);
 
   AIStarter_ColorFlash();
