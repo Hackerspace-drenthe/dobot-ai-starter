@@ -20,14 +20,29 @@ loop()
   char buffer[100];
 
   while (!AIStarter_ColorIsReady())
-    delay(0);
+    delay(250);
 
   sprintf(buffer,
-          "%3d, %3d, %3d",
+          "Kleuren    : (%3d, %3d, %3d)  (%3d, %3d, %3d) ",
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, RCOLOR),
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, GCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR1, BCOLOR));
+          AIStarter_SmartBotGetColorSenor(COLORSENOR1, BCOLOR),
+          AIStarter_SmartBotGetColorSenor(COLORSENOR2, RCOLOR),
+          AIStarter_SmartBotGetColorSenor(COLORSENOR2, GCOLOR),
+          AIStarter_SmartBotGetColorSenor(COLORSENOR2, BCOLOR));
 
   Serial.println(buffer);
+
+  sprintf(buffer,
+          "Lijn volger: %d%d%d%d%d",
+          AIStarter_SmartBotGetIRModuleValue(IR1),
+          AIStarter_SmartBotGetIRModuleValue(IR2),
+          AIStarter_SmartBotGetIRModuleValue(IR3),
+          AIStarter_SmartBotGetIRModuleValue(IR4),
+          AIStarter_SmartBotGetIRModuleValue(IR5),
+          AIStarter_SmartBotGetIRModuleValue(IR6)  );
+  Serial.println(buffer);
+
+
   AIStarter_ColorFlash();
 }
