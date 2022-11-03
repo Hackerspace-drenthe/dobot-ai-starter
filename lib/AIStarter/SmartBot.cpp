@@ -760,6 +760,7 @@ int AIStarter_SmartBotSetLED(int port, int state)
     {
     case LED1:
         gLED1State = state;
+        
         break;
     case LED2:
         gLED2State = state;

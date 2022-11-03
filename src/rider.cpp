@@ -146,9 +146,6 @@ void loop() {
   {
     //als het goed is zijn we hierboven al gestopt
 
-    //knipperlichten aan
-    AIStarter_SmartBotSetLED(LED1, BLINK);
-    AIStarter_SmartBotSetLED(LED2, BLINK);
 
     //piep
     digitalWrite(BEEP, HIGH);
