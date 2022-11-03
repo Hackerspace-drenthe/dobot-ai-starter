@@ -1,8 +1,6 @@
 #include "AIStarter.h";
 
-void
-setup()
-{
+void setup() {
   // direct starten
   promgramRun = true;
 
@@ -13,12 +11,10 @@ setup()
   //   AIStarter_SmartBotSetLED(LED1, BLINK);
 }
 
-float sensorLocaties[6] = { -30, -15, -5, 5, 15, 30 };
+float sensorLocaties[6] = {-30, -15, -5, 5, 15, 30};
 
 // bereken positie van lijn tov het midden, in millimeters
-float
-LijnLocatie()
-{
+float LijnLocatie() {
   int aantal = 0;
   float totaal = 0;
 
@@ -37,9 +33,7 @@ LijnLocatie()
 }
 
 // is de lijn nog zichtbaar en geldig?
-bool
-isLijnOk()
-{
+bool isLijnOk() {
   int aantalAan = 0;
   for (int sensorNr = 0; sensorNr < 6; sensorNr++) {
     if (AIStarter_SmartBotGetIRModuleValue(sensorNr)) {
@@ -51,14 +45,11 @@ isLijnOk()
   return (aantalAan != 0 && aantalAan != 6);
 }
 
-void
-loop()
-{
+void loop() {
   char buffer[100];
 
-  if (isLijnOk())
-  {
-      Serial.println(LijnLocatie());
+  if (isLijnOk()) {
+    Serial.println(LijnLocatie());
   }
 
   delay(100);
