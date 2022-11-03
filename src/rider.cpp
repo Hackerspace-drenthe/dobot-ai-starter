@@ -10,7 +10,45 @@ setup()
   pinMode(13, OUTPUT);
   pinMode(36, INPUT);
   AIStarter_SmartBotInit();
-  AIStarter_SmartBotSetLED(LED1, BLINK);
+  //   AIStarter_SmartBotSetLED(LED1, BLINK);
+}
+
+float sensorLocaties[6] = { -30, -15, -5, 5, 15, 30 };
+
+// bereken positie van lijn tov het midden, in millimeters
+float
+LijnLocatie()
+{
+  int aantal = 0;
+  float totaal = 0;
+
+  for (int sensorNr = 0; sensorNr < 6; sensorNr++) {
+    if (AIStarter_SmartBotGetIRModuleValue(sensorNr)) {
+      aantal++;
+      totaal = totaal + sensorLocaties[sensorNr];
+    }
+  }
+
+  if (aantal == 0)
+    return (0);
+
+  // gemiddelde waarde
+  return (totaal / aantal);
+}
+
+// is de lijn nog zichtbaar en geldig?
+bool
+isLijnOk()
+{
+  int aantalAan = 0;
+  for (int sensorNr = 0; sensorNr < 6; sensorNr++) {
+    if (AIStarter_SmartBotGetIRModuleValue(sensorNr)) {
+      aantalAan++;
+    }
+  }
+
+  // als alle sensors aan of uit zijn dan is er wat mis
+  return (aantalAan != 0 && aantalAan != 6);
 }
 
 void
@@ -18,40 +56,10 @@ loop()
 {
   char buffer[100];
 
-  while (!AIStarter_ColorIsReady())
-    delay(250);
+  if (isLijnOk())
+  {
+      Serial.println(LijnLocatie());
+  }
 
-  sprintf(buffer,
-          "Kleuren     : L=(%3d,%3d,%3d)  R=(%3d,%3d,%3d) ",
-          AIStarter_SmartBotGetColorSenor(COLORSENOR1, RCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR1, GCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR1, BCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR2, RCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR2, GCOLOR),
-          AIStarter_SmartBotGetColorSenor(COLORSENOR2, BCOLOR));
-
-  Serial.println(buffer);
-
-  sprintf(buffer,
-          "Lijn volger : %d%d%d%d%d",
-          AIStarter_SmartBotGetIRModuleValue(IR1),
-          AIStarter_SmartBotGetIRModuleValue(IR2),
-          AIStarter_SmartBotGetIRModuleValue(IR3),
-          AIStarter_SmartBotGetIRModuleValue(IR4),
-          AIStarter_SmartBotGetIRModuleValue(IR5),
-          AIStarter_SmartBotGetIRModuleValue(IR6));
-  Serial.println(buffer);
-
-  sprintf(buffer, "Licht sensor: %d", AIStarter_SmartBotGetLightAnalog());
-  Serial.println(buffer);
-
-  sprintf(buffer,
-          "Sonar       : L=%d M=%d R=%d",
-          (int)AIStarter_SmartBotGetSonar(SONAR1),
-          (int)AIStarter_SmartBotGetSonar(SONAR2),
-          (int)AIStarter_SmartBotGetSonar(SONAR3));
-  Serial.println(buffer);
-
-  AIStarter_ColorFlash();
+  delay(100);
 }
-
