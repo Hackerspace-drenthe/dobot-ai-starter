@@ -51,30 +51,37 @@ bool isLijnOk() {
   return (aantalAan != 0 && aantalAan != 6);
 }
 
-// const float P = 1;
+const int SNELHEID = 50;
+const float LIJN_CORRECTIE_FACTOR = 1;
+const int SONAR_VOOR_AFSTAND = 20;
 
 void loop() {
 
-  int snelheid = 25;
+  int snelheid = SNELHEID;
+
+  // is er wat voor ons?
+  // float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
+  // float sonarRemAfstand = 20;
+  // if (sonarVoor < SONAR_VOOR_AFSTAND) {
+  //   //rem af
+  //   snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
+  // }
 
   if (isLijnOk()) {
     float locatie = LijnLocatie();
 //    Serial.println(locatie);
 
-    //maximum error is -30 en +30
-    float error = 0 - locatie;
+    //breng error terug naar -1 tm 1
+    float error = 0 - (locatie/30);
 
 
-    // corrigeer door een motor af te remmen
-    float snelheidsVerschil = error * 1;
-
-    if (snelheidsVerschil>=0)
+    if (error>0)
     {
-      AIStarter_SmartBotSetMotor(MOTORL, snelheid-snelheidsVerschil);
+      AIStarter_SmartBotSetMotor(MOTORL, snelheid*(1-error));
       AIStarter_SmartBotSetMotor(MOTORR, snelheid);
     } else {
       AIStarter_SmartBotSetMotor(MOTORL, snelheid);
-      AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
+      AIStarter_SmartBotSetMotor(MOTORR, snelheid*(1+error));
     }
 
 
@@ -84,9 +91,11 @@ void loop() {
   }
   else
   {
+    //stop
     AIStarter_SmartBotSetMotor(MOTORL, 0);
     AIStarter_SmartBotSetMotor(MOTORR, 0);
   }
+
 
 
   // delay(100);
