@@ -33,8 +33,8 @@ PIParams gPIR, gPIL;
 
 /*PI params*/
 
-float kp = 1.3, ki = 0.13, kd = 1.0;
-const float kp_max = 2.5;
+float kp = 2, ki = 0.2, kd = 0;
+const float kp_max = 5.0;
 const float kp_min = 0.5;
 const float ki_max = 0.5;
 const float ki_min = 0.05;
@@ -58,7 +58,10 @@ const int xbeeReadBufferLen = 128;
 *********************************************************************************************************/
 static int MotorPI(PIParams *pi)
 {
-    pi->bias = (pi->target - pi->speed);
+    //bepaal offset van gewenste waarde 
+    pi->bias = (pi->speed - pi->target );
+
+    //intergrator
     pi->ivalue += pi->bias;
 
     if (pi->ivalue > pi->ilimit)
@@ -70,19 +73,20 @@ static int MotorPI(PIParams *pi)
         pi->ivalue = -pi->ilimit;
     }
 
+    //bepaal pwm
     pi->pwm = kp * pi->bias + ki * pi->ivalue + kd * (pi->bias - pi->lastBias);
     pi->lastBias = pi->bias;
 
-    /*Serial.print("pi->bias ");
-    Serial.print(pi->bias);
-    Serial.print(", pi->ivalue ");
-    Serial.print(pi->ivalue);
-    Serial.print(", pi->target ");
-    Serial.print(pi->target);
-    Serial.print(", pi->speed ");
-    Serial.print(pi->speed);
-    Serial.print(", pi->pwm ");
-    Serial.println(pi->pwm);*/
+    // Serial.print("pi->bias ");
+    // Serial.print(pi->bias);
+    // Serial.print(", pi->ivalue ");
+    // Serial.print(pi->ivalue);
+    // Serial.print(", pi->target ");
+    // Serial.print(pi->target);
+    // Serial.print(", pi->speed ");
+    // Serial.print(pi->speed);
+    // Serial.print(", pi->pwm ");
+    // Serial.println(pi->pwm);
 
     return pi->pwm;
 }
@@ -187,13 +191,13 @@ static int InitVariable(void)
         }                                       \
     }
 
-#define GEAR_RATIO 20                         //1:20
+#define GEAR_RATIO 45                         //1:20
 #define MAX_SPEED 200                         //rpm
 #define WHEEL_DIA 65                          //mm
-#define MOTOR_PPR 13                          //PPR
+#define MOTOR_PPR 12                          //PPR
 #define TOTAL_PPR (GEAR_RATIO * MOTOR_PPR)    //PPR
 #define PPMS_TO_PPM (60.0 * 1000 / TOTAL_PPR) //pulse per ms, convert to rpm
-#define COEFF_SPEED_FILTER 0.7
+#define COEFF_SPEED_FILTER 1.0
 
 static void Motor_ctrl(void)
 {
@@ -233,8 +237,10 @@ static void Motor_ctrl(void)
         speedReadR = PPMS_TO_PPM * (gCounterR - gLastCounterR) / deltaMillis; //rpm
         speedReadL = PPMS_TO_PPM * (gCounterL - gLastCounterL) / deltaMillis; //rpm
 
+        //filter speed noise
         gPIR.speed = (1 - COEFF_SPEED_FILTER) * gPIR.lastSpeed + COEFF_SPEED_FILTER * speedReadR;
         gPIL.speed = (1 - COEFF_SPEED_FILTER) * gPIL.lastSpeed + COEFF_SPEED_FILTER * speedReadL;
+
 
         gPIR.lastSpeed = gPIR.speed;
         gPIL.lastSpeed = gPIL.speed;

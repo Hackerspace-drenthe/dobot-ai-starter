@@ -8,11 +8,12 @@ void setup() {
   pinMode(13, OUTPUT);
   pinMode(36, INPUT);
   AIStarter_SmartBotInit();
-  AIStarter_SmartBotSetMotorPI(3.4, 0.2);
+  // AIStarter_SmartBotSetMotorPI(3.4, 0.2);
 
   //   AIStarter_SmartBotSetLED(LED1, BLINK);
 
-  AIStarter_SmartBotSetMotor(MOTORL, 1);
+  AIStarter_SmartBotSetMotor(MOTORL, 50);
+  AIStarter_SmartBotSetMotor(MOTORR, 50);
   // AIStarter_SmartBotSetMovment(FRONT, 100);
 }
 
