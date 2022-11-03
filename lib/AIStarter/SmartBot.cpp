@@ -178,7 +178,7 @@ static int InitVariable(void)
     /*LED*/
     gLED1State = OFF;
     gLED2State = OFF;
-    gBlinkFre = 500;
+    gBlinkFre = 250;
 
     /*Motor*/
     gSpeedMode = false;

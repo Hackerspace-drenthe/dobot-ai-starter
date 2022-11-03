@@ -2,7 +2,7 @@
 
 void setup() {
   // direct starten
-    promgramRun = true;
+  promgramRun = true;
 
   Serial.begin(115200);
   pinMode(13, OUTPUT);
@@ -56,47 +56,64 @@ const float LIJN_CORRECTIE_FACTOR = 1;
 const int SONAR_VOOR_AFSTAND = 20;
 
 void loop() {
-
   int snelheid = SNELHEID;
 
   // is er wat voor ons?
-  // float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
-  // float sonarRemAfstand = 20;
-  // if (sonarVoor < SONAR_VOOR_AFSTAND) {
-  //   //rem af
-  //   snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
-  // }
+  float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
+  float sonarRemAfstand = 20;
+  if (sonarVoor < SONAR_VOOR_AFSTAND) {
+    // rem af
+    snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
+
+    // 5cm, stop!
+    if (sonarVoor < 5) {
+      AIStarter_SmartBotSetLED(LED1, BLINK);
+      AIStarter_SmartBotSetLED(LED2, BLINK);
+      AIStarter_SmartBotSetMotor(MOTORL, 0);
+      AIStarter_SmartBotSetMotor(MOTORR, 0);
+      // wacht tot hij zeker weten weer vrij is
+      int vrijTeller = 0;
+      while (vrijTeller < 50) {
+        if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
+          vrijTeller++;
+        else
+          vrijTeller = 0;
+      }
+    }
+  }
 
   if (isLijnOk()) {
     float locatie = LijnLocatie();
-//    Serial.println(locatie);
 
-    //breng error terug naar -1 tm 1
-    float error = 0 - (locatie/30);
+    // ledjes zijn richting aanwijzer
+    AIStarter_SmartBotSetLED(LED1, OFF);
+    AIStarter_SmartBotSetLED(LED2, OFF);
+    if (locatie < -5)
+      AIStarter_SmartBotSetLED(LED1, BLINK);
+    if (locatie > 5)
+      AIStarter_SmartBotSetLED(LED2, BLINK);
 
+    // breng error terug naar -1 tm 1
+    float error = 0 - (locatie / 30);
 
-    if (error>0)
-    {
-      AIStarter_SmartBotSetMotor(MOTORL, snelheid*(1-error));
+    if (error > 0) {
+      AIStarter_SmartBotSetMotor(MOTORL, snelheid * (1 - error));
       AIStarter_SmartBotSetMotor(MOTORR, snelheid);
     } else {
       AIStarter_SmartBotSetMotor(MOTORL, snelheid);
-      AIStarter_SmartBotSetMotor(MOTORR, snelheid*(1+error));
+      AIStarter_SmartBotSetMotor(MOTORR, snelheid * (1 + error));
     }
-
 
     //  AIStarter_SmartBotSetMotor(MOTORL, snelheid - snelheidsVerschil);
     //  AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
 
-  }
-  else
-  {
-    //stop
+  } else {
+    // stop
     AIStarter_SmartBotSetMotor(MOTORL, 0);
     AIStarter_SmartBotSetMotor(MOTORR, 0);
+    AIStarter_SmartBotSetLED(LED1, ON);
+    AIStarter_SmartBotSetLED(LED2, ON);
   }
-
-
 
   // delay(100);
 }
