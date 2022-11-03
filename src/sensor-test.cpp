@@ -21,6 +21,8 @@ loop()
   while (!AIStarter_ColorIsReady())
     delay(250);
 
+  Serial.println();
+
   sprintf(buffer,
           "Kleuren     : L=(%3d,%3d,%3d)  R=(%3d,%3d,%3d) ",
           AIStarter_SmartBotGetColorSenor(COLORSENOR1, RCOLOR),
@@ -52,6 +54,15 @@ loop()
           (int)AIStarter_SmartBotGetSonar(SONAR3));
   Serial.println(buffer);
 
+  sprintf(buffer, "Motor pos   : L=%d R=%d",
+          (int)AIStarter_SmartBotGetMotorPose(MOTORL),
+          (int)AIStarter_SmartBotGetMotorPose(MOTORR));
+  Serial.println(buffer);
+
+  sprintf(buffer, "Compas      : %d", (int)AIStarter_SmartBotGetCompass());
+  Serial.println(buffer);
+
   AIStarter_ColorFlash();
+
 }
 

@@ -141,7 +141,7 @@ float CompassSenorDetect()
     float angle = calculateHeading(&x, &y);
 #endif
 
-#if 1
+#if 0
     Serial.print("tempx: ");
     Serial.print(tempx);
     Serial.print(";tempy: ");

@@ -2,13 +2,18 @@
 
 void setup() {
   // direct starten
-  promgramRun = true;
+    promgramRun = true;
 
   Serial.begin(115200);
   pinMode(13, OUTPUT);
   pinMode(36, INPUT);
   AIStarter_SmartBotInit();
+  AIStarter_SmartBotSetMotorPI(3.4, 0.2);
+
   //   AIStarter_SmartBotSetLED(LED1, BLINK);
+
+  AIStarter_SmartBotSetMotor(MOTORL, 1);
+  // AIStarter_SmartBotSetMovment(FRONT, 100);
 }
 
 float sensorLocaties[6] = {-30, -15, -5, 5, 15, 30};
@@ -45,11 +50,20 @@ bool isLijnOk() {
   return (aantalAan != 0 && aantalAan != 6);
 }
 
+const float P = 1;
+
 void loop() {
-  char buffer[100];
 
   if (isLijnOk()) {
-    Serial.println(LijnLocatie());
+    float locatie = LijnLocatie();
+    Serial.println();
+
+    float error = 0 - locatie;
+
+    float snelheidsVerschil = error * P;
+
+    
+
   }
 
   delay(100);
