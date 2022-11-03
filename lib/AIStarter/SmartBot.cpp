@@ -77,6 +77,12 @@ static int MotorPI(PIParams *pi)
     pi->pwm = kp * pi->bias + ki * pi->ivalue + kd * (pi->bias - pi->lastBias);
     pi->lastBias = pi->bias;
 
+    //power/noise reduction
+    if (abs(pi->pwm)<100)
+    {
+        pi->pwm = 0;
+    }
+
     // Serial.print("pi->bias ");
     // Serial.print(pi->bias);
     // Serial.print(", pi->ivalue ");

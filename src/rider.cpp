@@ -12,9 +12,9 @@ void setup() {
 
   //   AIStarter_SmartBotSetLED(LED1, BLINK);
 
-  AIStarter_SmartBotSetMotor(MOTORL, 50);
-  AIStarter_SmartBotSetMotor(MOTORR, 50);
-  // AIStarter_SmartBotSetMovment(FRONT, 100);
+  // AIStarter_SmartBotSetMotor(MOTORL, 50);
+  // AIStarter_SmartBotSetMotor(MOTORR, 50);
+  // AIStarter_SmartBotSetMovment(FRONT, 50);
 }
 
 float sensorLocaties[6] = {-30, -15, -5, 5, 15, 30};
@@ -51,21 +51,43 @@ bool isLijnOk() {
   return (aantalAan != 0 && aantalAan != 6);
 }
 
-const float P = 1;
+// const float P = 1;
 
 void loop() {
 
+  int snelheid = 25;
+
   if (isLijnOk()) {
     float locatie = LijnLocatie();
-    Serial.println();
+//    Serial.println(locatie);
 
+    //maximum error is -30 en +30
     float error = 0 - locatie;
 
-    float snelheidsVerschil = error * P;
 
-    
+    // corrigeer door een motor af te remmen
+    float snelheidsVerschil = error * 1;
+
+    if (snelheidsVerschil>=0)
+    {
+      AIStarter_SmartBotSetMotor(MOTORL, snelheid-snelheidsVerschil);
+      AIStarter_SmartBotSetMotor(MOTORR, snelheid);
+    } else {
+      AIStarter_SmartBotSetMotor(MOTORL, snelheid);
+      AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
+    }
+
+
+    //  AIStarter_SmartBotSetMotor(MOTORL, snelheid - snelheidsVerschil);
+    //  AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
 
   }
+  else
+  {
+    AIStarter_SmartBotSetMotor(MOTORL, 0);
+    AIStarter_SmartBotSetMotor(MOTORR, 0);
+  }
 
-  delay(100);
+
+  // delay(100);
 }
