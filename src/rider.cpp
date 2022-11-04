@@ -79,28 +79,28 @@ void loop() {
 
   /////////////////////////// SONAR
   // is er wat voor ons?
-  // float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
-  // float sonarRemAfstand = 20;
-  // if (sonarVoor < SONAR_VOOR_AFSTAND) {
-  //   // rem af
-  //   snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
+  float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
+  float sonarRemAfstand = 20;
+  if (sonarVoor < SONAR_VOOR_AFSTAND) {
+    // rem af
+    snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
 
-  //   // 5cm, stop!
-  //   if (sonarVoor < 5) {
-  //     AIStarter_SmartBotSetLED(LED1, BLINK);
-  //     AIStarter_SmartBotSetLED(LED2, BLINK);
-  //     AIStarter_SmartBotSetMotor(MOTORL, 0);
-  //     AIStarter_SmartBotSetMotor(MOTORR, 0);
-  //     // wacht tot hij zeker weten weer vrij is
-  //     int vrijTeller = 0;
-  //     while (vrijTeller < 50) {
-  //       if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
-  //         vrijTeller++;
-  //       else
-  //         vrijTeller = 0;
-  //     }
-  //   }
-  // }
+    // 5cm, stop!
+    if (sonarVoor < 5) {
+      AIStarter_SmartBotSetLED(LED1, BLINK);
+      AIStarter_SmartBotSetLED(LED2, BLINK);
+      AIStarter_SmartBotSetMotor(MOTORL, 0);
+      AIStarter_SmartBotSetMotor(MOTORR, 0);
+      // wacht tot hij zeker weten weer vrij is
+      int vrijTeller = 0;
+      while (vrijTeller < 50) {
+        if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
+          vrijTeller++;
+        else
+          vrijTeller = 0;
+      }
+    }
+  }
 
   /////////////////////// VOLG LIJN
   if (isVolgLijn()) {
