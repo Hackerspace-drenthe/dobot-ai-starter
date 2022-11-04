@@ -1,5 +1,10 @@
 #include "AIStarter.h";
 
+const int SNELHEID = 50;
+const float LIJN_CORRECTIE_FACTOR = 1;
+const int SONAR_VOOR_AFSTAND = 20;
+const int WACHT_TIJD = 5;
+
 void setup() {
   // direct starten
   promgramRun = true;
@@ -35,10 +40,12 @@ float LijnLocatie() {
 
   float waarde = 0;
   if (aantal > 0)
+  {
     waarde = (totaal / aantal);
 
-  //filter ruis
-  laatsteLocatie = 0.9 * laatsteLocatie + 0.1 * waarde;
+    //filter ruis
+    laatsteLocatie = 0.9 * laatsteLocatie + 0.1 * waarde;
+  }
   return (laatsteLocatie);
 }
 
@@ -71,10 +78,8 @@ bool isStopLijn() {
 }
 
 
-const int SNELHEID = 50;
-const float LIJN_CORRECTIE_FACTOR = 1;
-const int SONAR_VOOR_AFSTAND = 20;
-const int WACHT_TIJD = 5;
+
+long int laatstGezien = 0;
 
 void loop() {
   int snelheid = SNELHEID;
@@ -108,6 +113,8 @@ void loop() {
 
   /////////////////////// VOLG LIJN
   if (isVolgLijn()) {
+    laatstGezien = millis();
+
     float locatie = LijnLocatie();
     // Serial.println(locatie);
 
@@ -134,18 +141,26 @@ void loop() {
     //  AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
 
   } else {
-    // stop
-    AIStarter_SmartBotSetMotor(MOTORL, 0);
-    AIStarter_SmartBotSetMotor(MOTORR, 0);
-    AIStarter_SmartBotSetLED(LED1, ON);
-    AIStarter_SmartBotSetLED(LED2, ON);
+
+    //stop pas als hij de lijn een tijdje niet ziet
+    if (millis()-laatstGezien>1000)
+    {
+      // stop
+      AIStarter_SmartBotSetMotor(MOTORL, 0);
+      AIStarter_SmartBotSetMotor(MOTORR, 0);
+      AIStarter_SmartBotSetLED(LED1, ON);
+      AIStarter_SmartBotSetLED(LED2, ON);
+    }
   }
 
   /////////////////////// STOP LIJN
   if (isStopLijn())
+  // if (false)
   {
-    //als het goed is zijn we hierboven al gestopt
-
+    AIStarter_SmartBotSetMotor(MOTORL, 0);
+    AIStarter_SmartBotSetMotor(MOTORR, 0);
+    AIStarter_SmartBotSetLED(LED1, BLINK);
+    AIStarter_SmartBotSetLED(LED2, BLINK);
 
     //piep
     digitalWrite(BEEP, HIGH);
@@ -153,17 +168,25 @@ void loop() {
     digitalWrite(BEEP, LOW);
 
     //blinken lights
-    for (int t = 0; t < WACHT_TIJD;t++)
+    // for (int t = 0; t < WACHT_TIJD;t++)
+    while(isStopLijn())
     {
       AIStarter_ColorFlash();
       delay(1000);
+      if (millis()-laatstGezien>30000)
+      {
+        // trap een stukje naar voren
+        AIStarter_SmartBotSetMotor(MOTORL, SNELHEID);
+        AIStarter_SmartBotSetMotor(MOTORR, SNELHEID);
+        delay(250);
+        AIStarter_SmartBotSetMotor(MOTORL, 0);
+        AIStarter_SmartBotSetMotor(MOTORR, 0);
+        break;
+      }
     }
 
-    //trap een stukje naar voren
-    AIStarter_SmartBotSetMotor(MOTORL, SNELHEID);
-    AIStarter_SmartBotSetMotor(MOTORR, SNELHEID);
-    delay(250);
-    AIStarter_SmartBotSetMotor(MOTORL, 0);
-    AIStarter_SmartBotSetMotor(MOTORR, 0);
+    // while (isStopLijn())
+    //   delay(1);
+
   }
 }
