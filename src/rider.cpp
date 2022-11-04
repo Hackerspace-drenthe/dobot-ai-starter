@@ -41,10 +41,11 @@ float LijnLocatie() {
   float waarde = 0;
   if (aantal > 0) {
     waarde = (totaal / aantal);
-
-    // filter ruis
-    laatsteLocatie = 0.9 * laatsteLocatie + 0.1 * waarde;
   }
+
+  // filter ruis
+  laatsteLocatie = 0.9 * laatsteLocatie + 0.1 * waarde;
+
   return (laatsteLocatie);
 }
 
@@ -72,9 +73,8 @@ bool isStopLijn() {
   return (aantalAan >= 4 && aantalAan <= 6);
 }
 
-//geef waarde van dichtsbijzijnde robot
-float sonarMinimum()
-{
+// geef waarde van dichtsbijzijnde robot
+float sonarMinimum() {
   float l = AIStarter_SmartBotGetSonar(SONAR1);
   float r = AIStarter_SmartBotGetSonar(SONAR2);
   float m = AIStarter_SmartBotGetSonar(SONAR3);
@@ -144,8 +144,12 @@ void loop() {
     //  AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
 
   } else {
+    //rechtdoor als lijn kwijt is
+    AIStarter_SmartBotSetMotor(MOTORL, snelheid);
+    AIStarter_SmartBotSetMotor(MOTORR, snelheid);
+
     // lijn tijdje kwijt, probeer te zoeken
-    if (millis() - laatstGezien > 500) {
+    if (millis() - laatstGezien > 250) {
       // const int draaisnelheid = 100;
       const int draaisnelheid = 15;
 
