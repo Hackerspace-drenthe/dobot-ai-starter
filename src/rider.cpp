@@ -72,6 +72,18 @@ bool isStopLijn() {
   return (aantalAan >= 4 && aantalAan <= 6);
 }
 
+//geef waarde van dichtsbijzijnde robot
+float sonarMinimum()
+{
+  float l = AIStarter_SmartBotGetSonar(SONAR1);
+  float r = AIStarter_SmartBotGetSonar(SONAR2);
+  float m = AIStarter_SmartBotGetSonar(SONAR3);
+
+  float ret = min(l, r);
+  ret = min(ret, m);
+  return (ret);
+}
+
 long int laatstGezien = 0;
 
 void loop() {
@@ -79,7 +91,7 @@ void loop() {
 
   /////////////////////////// SONAR
   // is er wat voor ons?
-  float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
+  float sonarVoor = sonarMinimum();
   float sonarRemAfstand = 20;
   if (sonarVoor < SONAR_VOOR_AFSTAND) {
     // rem af
@@ -94,7 +106,7 @@ void loop() {
       // wacht tot hij zeker weten weer vrij is
       int vrijTeller = 0;
       while (vrijTeller < 50) {
-        if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
+        if (sonarMinimum() > 10)
           vrijTeller++;
         else
           vrijTeller = 0;
