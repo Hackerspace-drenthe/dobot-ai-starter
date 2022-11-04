@@ -138,7 +138,7 @@ extern int AIStarter_SmartBotSetMovmentTime(int dir, int speed, float time);
 ** Output parameters:   none
 ** Returned value:      none
 *********************************************************************************************************/
-extern int AIStarter_SmartBotSetMotor(int port, int speed);
+extern int AIStarter_SmartBotSetMotor(int port, int speed, bool resetPid=false);
 
 /*********************************************************************************************************
 ** Function name:       SmartBotSetMotorPI

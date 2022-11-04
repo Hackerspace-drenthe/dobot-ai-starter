@@ -133,11 +133,14 @@ void loop() {
 
   } else {
     // lijn tijdje kwijt, probeer te zoeken
-    if (millis() - laatstGezien > 1000) {
-      const int draaisnelheid = 100;
+    if (millis() - laatstGezien > 500) {
+      // const int draaisnelheid = 100;
+      const int draaisnelheid = 15;
 
       // 1 sec links
-      AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      // AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      AIStarter_SmartBotSetMotor(MOTORL, -draaisnelheid, true);
+      AIStarter_SmartBotSetMotor(MOTORR, 0, true);
       while ((millis() - laatstGezien < 2000)) {
         if (isVolgLijn()) {
           AIStarter_SmartBotSetMovment(FRONT, 0);
@@ -146,7 +149,9 @@ void loop() {
       }
 
       // 2 sec rechts
-      AIStarter_SmartBotSetMovment(RIGHT, draaisnelheid);
+      // AIStarter_SmartBotSetMovment(RIGHT, draaisnelheid);
+      AIStarter_SmartBotSetMotor(MOTORL, 0, true);
+      AIStarter_SmartBotSetMotor(MOTORR, -draaisnelheid, true);
       while ((millis() - laatstGezien < 4000)) {
         if (isVolgLijn()) {
           AIStarter_SmartBotSetMovment(FRONT, 0);
@@ -155,7 +160,9 @@ void loop() {
       };
 
       // 1 sec links (weer in t midden)
-      AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      // AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      AIStarter_SmartBotSetMotor(MOTORL, -draaisnelheid, true);
+      AIStarter_SmartBotSetMotor(MOTORR, 0, true);
       while ((millis() - laatstGezien < 5000)) {
         if (isVolgLijn()) {
           AIStarter_SmartBotSetMovment(FRONT, 0);
@@ -195,9 +202,9 @@ void loop() {
 
     // blinken lights
     //  for (int t = 0; t < WACHT_TIJD;t++)
+    AIStarter_ColorFlash();
     while (isStopLijn()) {
-      AIStarter_ColorFlash();
-      delay(1000);
+      // delay(1000);
       if (millis() - laatstGezien > 30000) {
         // trap een stukje naar voren
         AIStarter_SmartBotSetMotor(MOTORL, SNELHEID);

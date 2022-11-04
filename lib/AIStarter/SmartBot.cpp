@@ -499,7 +499,7 @@ int AIStarter_SmartBotSetMovmentTime(int dir, int speed, float time)
     return 0;
 }
 
-int AIStarter_SmartBotSetMotor(int port, int speed)
+int AIStarter_SmartBotSetMotor(int port, int speed, bool resetPid)
 {
     speed = -speed;
     gSpeedMode = true;
@@ -507,9 +507,18 @@ int AIStarter_SmartBotSetMotor(int port, int speed)
     {
     case MOTORR:
         gPIR.target = speed;
+        if (resetPid)
+        {
+                gPIR.ivalue = 0;
+
+        }
+
         break;
     case MOTORL:
         gPIL.target = speed;
+        if (resetPid) {
+                gPIL.ivalue = 0;
+        }
         break;
     default:
         break;
