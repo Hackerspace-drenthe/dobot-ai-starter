@@ -39,20 +39,17 @@ float LijnLocatie() {
   }
 
   float waarde = 0;
-  if (aantal > 0)
-  {
+  if (aantal > 0) {
     waarde = (totaal / aantal);
 
-    //filter ruis
+    // filter ruis
     laatsteLocatie = 0.9 * laatsteLocatie + 0.1 * waarde;
   }
   return (laatsteLocatie);
 }
 
-
-//tel aantal IR leds dat iets detecteert
-int aantalIRaan()
-{
+// tel aantal IR leds dat iets detecteert
+int aantalIRaan() {
   int aantalAan = 0;
   for (int sensorNr = 0; sensorNr < 6; sensorNr++) {
     if (AIStarter_SmartBotGetIRModuleValue(sensorNr)) {
@@ -62,14 +59,12 @@ int aantalIRaan()
   return (aantalAan);
 }
 
-
 // is de volg lijn nog zichtbaar en geldig?
 bool isVolgLijn() {
   int aantalAan = aantalIRaan();
   // lijn dikte
-  return (aantalAan >=1 && aantalAan <=2);
+  return (aantalAan >= 1 && aantalAan <= 2);
 }
-
 
 // staan we op de stoplijn?
 bool isStopLijn() {
@@ -77,39 +72,35 @@ bool isStopLijn() {
   return (aantalAan >= 4 && aantalAan <= 6);
 }
 
-
-
 long int laatstGezien = 0;
 
 void loop() {
   int snelheid = SNELHEID;
 
-
   /////////////////////////// SONAR
   // is er wat voor ons?
-  float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
-  float sonarRemAfstand = 20;
-  if (sonarVoor < SONAR_VOOR_AFSTAND) {
-    // rem af
-    snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
+  // float sonarVoor = AIStarter_SmartBotGetSonar(SONAR2);
+  // float sonarRemAfstand = 20;
+  // if (sonarVoor < SONAR_VOOR_AFSTAND) {
+  //   // rem af
+  //   snelheid = snelheid * (sonarVoor / SONAR_VOOR_AFSTAND);
 
-    // 5cm, stop!
-    if (sonarVoor < 5) {
-      AIStarter_SmartBotSetLED(LED1, BLINK);
-      AIStarter_SmartBotSetLED(LED2, BLINK);
-      AIStarter_SmartBotSetMotor(MOTORL, 0);
-      AIStarter_SmartBotSetMotor(MOTORR, 0);
-      // wacht tot hij zeker weten weer vrij is
-      int vrijTeller = 0;
-      while (vrijTeller < 50) {
-        if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
-          vrijTeller++;
-        else
-          vrijTeller = 0;
-      }
-    }
-  }
-
+  //   // 5cm, stop!
+  //   if (sonarVoor < 5) {
+  //     AIStarter_SmartBotSetLED(LED1, BLINK);
+  //     AIStarter_SmartBotSetLED(LED2, BLINK);
+  //     AIStarter_SmartBotSetMotor(MOTORL, 0);
+  //     AIStarter_SmartBotSetMotor(MOTORR, 0);
+  //     // wacht tot hij zeker weten weer vrij is
+  //     int vrijTeller = 0;
+  //     while (vrijTeller < 50) {
+  //       if (AIStarter_SmartBotGetSonar(SONAR2) > 10)
+  //         vrijTeller++;
+  //       else
+  //         vrijTeller = 0;
+  //     }
+  //   }
+  // }
 
   /////////////////////// VOLG LIJN
   if (isVolgLijn()) {
@@ -141,16 +132,51 @@ void loop() {
     //  AIStarter_SmartBotSetMotor(MOTORR, snelheid + snelheidsVerschil);
 
   } else {
+    // lijn tijdje kwijt, probeer te zoeken
+    if (millis() - laatstGezien > 1000) {
+      const int draaisnelheid = 100;
 
-    //stop pas als hij de lijn een tijdje niet ziet
-    if (millis()-laatstGezien>1000)
-    {
-      // stop
+      // 1 sec links
+      AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      while ((millis() - laatstGezien < 2000)) {
+        if (isVolgLijn()) {
+          AIStarter_SmartBotSetMovment(FRONT, 0);
+          return;
+        }
+      }
+
+      // 2 sec rechts
+      AIStarter_SmartBotSetMovment(RIGHT, draaisnelheid);
+      while ((millis() - laatstGezien < 4000)) {
+        if (isVolgLijn()) {
+          AIStarter_SmartBotSetMovment(FRONT, 0);
+          return;
+        }
+      };
+
+      // 1 sec links (weer in t midden)
+      AIStarter_SmartBotSetMovment(LEFT, draaisnelheid);
+      while ((millis() - laatstGezien < 5000)) {
+        if (isVolgLijn()) {
+          AIStarter_SmartBotSetMovment(FRONT, 0);
+          return;
+        }
+      };
+
+      // wacht
       AIStarter_SmartBotSetMotor(MOTORL, 0);
       AIStarter_SmartBotSetMotor(MOTORR, 0);
-      AIStarter_SmartBotSetLED(LED1, ON);
-      AIStarter_SmartBotSetLED(LED2, ON);
+      while (!isVolgLijn())
+        ;
     }
+
+    // stop pas als hij de lijn een tijdje niet ziet
+    //  if (millis()-laatstGezien>1000)
+    //  {
+    //    // stop
+    //    AIStarter_SmartBotSetLED(LED1, ON);
+    //    AIStarter_SmartBotSetLED(LED2, ON);
+    //  }
   }
 
   /////////////////////// STOP LIJN
@@ -162,19 +188,17 @@ void loop() {
     AIStarter_SmartBotSetLED(LED1, BLINK);
     AIStarter_SmartBotSetLED(LED2, BLINK);
 
-    //piep
+    // piep
     digitalWrite(BEEP, HIGH);
     delay(100);
     digitalWrite(BEEP, LOW);
 
-    //blinken lights
-    // for (int t = 0; t < WACHT_TIJD;t++)
-    while(isStopLijn())
-    {
+    // blinken lights
+    //  for (int t = 0; t < WACHT_TIJD;t++)
+    while (isStopLijn()) {
       AIStarter_ColorFlash();
       delay(1000);
-      if (millis()-laatstGezien>30000)
-      {
+      if (millis() - laatstGezien > 30000) {
         // trap een stukje naar voren
         AIStarter_SmartBotSetMotor(MOTORL, SNELHEID);
         AIStarter_SmartBotSetMotor(MOTORR, SNELHEID);
@@ -187,6 +211,5 @@ void loop() {
 
     // while (isStopLijn())
     //   delay(1);
-
   }
 }
